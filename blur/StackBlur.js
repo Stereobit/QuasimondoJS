@@ -102,7 +102,9 @@ stackBlurImage.prototype = {
         context.clearRect( 0, 0, w, h );
         context.drawImage( img, 0, 0 );
 
-        if ( isNaN(this.options.radius) || this.options.radius < 1 ) return;
+        if ( isNaN(this.options.radius) || this.options.radius < 1 ) {
+            throw new Error("Please provide radius that is number greater than 1");
+        }
 
         if ( this.options.aphaChannel )
             this.stackBlurCanvasRGBA(0, 0, w, h, this.options.radius );
