@@ -92,17 +92,6 @@ stackBlurImage.prototype = {
         var w = img.naturalWidth;
         var h = img.naturalHeight;
 
-        var canvas = this.options.canvas;
-
-        canvas.style.width  = w + "px";
-        canvas.style.height = h + "px";
-        canvas.width = w;
-        canvas.height = h;
-
-        var context = canvas.getContext("2d");
-        context.clearRect( 0, 0, w, h );
-        context.drawImage( img, 0, 0 );
-
 
         // make sure that radius is a number
         this.options.radius = this.options.radius |= 0;
@@ -112,10 +101,28 @@ stackBlurImage.prototype = {
             throw new Error("Please provide radius that is number greater than 1");
         }
 
+        this.createCanvas();
+
         if ( this.options.aphaChannel )
             this.stackBlurCanvasRGBA(0, 0, w, h, this.options.radius );
         else
             stackBlurCanvasRGB(0, 0, w, h, this.options.radius );
+    },
+
+    createCanvas: function() {
+        var canvas = this.options.canvas,
+            img = this.options.image,
+            w = img.naturalWidth,
+            h = img.naturalHeight;
+
+        canvas.style.width  = w + "px";
+        canvas.style.height = h + "px";
+        canvas.width = w;
+        canvas.height = h;
+
+        var context = canvas.getContext("2d");
+        context.clearRect( 0, 0, w, h );
+        context.drawImage( img, 0, 0 );
     },
 
     stackBlurCanvasRGBA: function(top_x, top_y, width, height, radius ) {
