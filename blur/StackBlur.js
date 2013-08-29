@@ -80,30 +80,34 @@ var stackBlurImage = function(options) {
 
     this.options = options;
 
-    var img = this.options.image;
-    var w = img.naturalWidth;
-    var h = img.naturalHeight;
-
-    var canvas = this.options.canvas;
-
-    canvas.style.width  = w + "px";
-    canvas.style.height = h + "px";
-    canvas.width = w;
-    canvas.height = h;
-
-    var context = canvas.getContext("2d");
-    context.clearRect( 0, 0, w, h );
-    context.drawImage( img, 0, 0 );
-
-    if ( isNaN(this.options.radius) || this.options.radius < 1 ) return;
-
-    if ( this.options.aphaChannel )
-        this.stackBlurCanvasRGBA(0, 0, w, h, this.options.radius );
-    else
-        stackBlurCanvasRGB(0, 0, w, h, this.options.radius );
 };
 
 stackBlurImage.prototype = {
+
+    init: function() {
+        var img = this.options.image;
+        var w = img.naturalWidth;
+        var h = img.naturalHeight;
+
+        var canvas = this.options.canvas;
+
+        canvas.style.width  = w + "px";
+        canvas.style.height = h + "px";
+        canvas.width = w;
+        canvas.height = h;
+
+        var context = canvas.getContext("2d");
+        context.clearRect( 0, 0, w, h );
+        context.drawImage( img, 0, 0 );
+
+        if ( isNaN(this.options.radius) || this.options.radius < 1 ) return;
+
+        if ( this.options.aphaChannel )
+            this.stackBlurCanvasRGBA(0, 0, w, h, this.options.radius );
+        else
+            stackBlurCanvasRGB(0, 0, w, h, this.options.radius );
+    },
+
     stackBlurCanvasRGBA: function(top_x, top_y, width, height, radius ) {
         if ( isNaN(radius) || radius < 1 ) return;
         radius |= 0;
