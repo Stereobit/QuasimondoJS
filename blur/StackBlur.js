@@ -87,6 +87,11 @@ var stackBlurImage = function(options) {
 stackBlurImage.prototype = {
 
     init: function() {
+
+        // make sure that radius is a number
+        this.options.radius = this.options.radius |= 0;
+
+
         var img = this.options.image;
         var w = img.naturalWidth;
         var h = img.naturalHeight;
@@ -113,7 +118,6 @@ stackBlurImage.prototype = {
     },
 
     stackBlurCanvasRGBA: function(top_x, top_y, width, height, radius ) {
-        radius |= 0;
 
         var canvas  = this.options.canvas;
         var context = canvas.getContext("2d");
@@ -357,7 +361,6 @@ stackBlurImage.prototype = {
     },
 
     stackBlurCanvasRGB: function(top_x, top_y, width, height, radius ) {
-        radius |= 0;
 
         var canvas  = this.options.canvas;
         var context = canvas.getContext("2d");
