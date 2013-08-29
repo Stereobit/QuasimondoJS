@@ -80,6 +80,8 @@ var stackBlurImage = function(options) {
 
     this.options = options;
 
+    this.init();
+
 };
 
 stackBlurImage.prototype = {
