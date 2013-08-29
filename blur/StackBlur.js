@@ -88,10 +88,6 @@ stackBlurImage.prototype = {
 
     init: function() {
 
-        // make sure that radius is a number
-        this.options.radius = this.options.radius |= 0;
-
-
         var img = this.options.image;
         var w = img.naturalWidth;
         var h = img.naturalHeight;
@@ -107,6 +103,11 @@ stackBlurImage.prototype = {
         context.clearRect( 0, 0, w, h );
         context.drawImage( img, 0, 0 );
 
+
+        // make sure that radius is a number
+        this.options.radius = this.options.radius |= 0;
+
+        // validate radius
         if ( isNaN(this.options.radius) || this.options.radius < 1 ) {
             throw new Error("Please provide radius that is number greater than 1");
         }
