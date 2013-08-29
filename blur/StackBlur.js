@@ -98,473 +98,471 @@ var stackBlurImage = function(options) {
     if ( isNaN(this.options.radius) || this.options.radius < 1 ) return;
 
     if ( this.options.aphaChannel )
-        stackBlurCanvasRGBA(this.options.canvas, 0, 0, w, h, this.options.radius );
+        this.stackBlurCanvasRGBA(this.options.canvas, 0, 0, w, h, this.options.radius );
     else
         stackBlurCanvasRGB(this.options.canvas, 0, 0, w, h, this.options.radius );
 };
 
+stackBlurImage.prototype = {
+    stackBlurCanvasRGBA: function( canvasIDOrElement, top_x, top_y, width, height, radius ) {
+        if ( isNaN(radius) || radius < 1 ) return;
+        radius |= 0;
 
-function stackBlurCanvasRGBA( canvasIDOrElement, top_x, top_y, width, height, radius )
-{
-    if ( isNaN(radius) || radius < 1 ) return;
-    radius |= 0;
+        var canvas  = canvasIDOrElement;
+        var context = canvas.getContext("2d");
+        var imageData;
 
-    var canvas  = canvasIDOrElement;
-    var context = canvas.getContext("2d");
-    var imageData;
+        imageData = context.getImageData( top_x, top_y, width, height );
 
-    imageData = context.getImageData( top_x, top_y, width, height );
+        var pixels = imageData.data;
 
-    var pixels = imageData.data;
+        var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum, a_sum,
+        r_out_sum, g_out_sum, b_out_sum, a_out_sum,
+        r_in_sum, g_in_sum, b_in_sum, a_in_sum,
+        pr, pg, pb, pa, rbs;
 
-    var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum, a_sum,
-    r_out_sum, g_out_sum, b_out_sum, a_out_sum,
-    r_in_sum, g_in_sum, b_in_sum, a_in_sum,
-    pr, pg, pb, pa, rbs;
+        var div = radius + radius + 1;
+        var w4 = width << 2;
+        var widthMinus1  = width - 1;
+        var heightMinus1 = height - 1;
+        var radiusPlus1  = radius + 1;
+        var sumFactor = radiusPlus1 * ( radiusPlus1 + 1 ) / 2;
 
-    var div = radius + radius + 1;
-    var w4 = width << 2;
-    var widthMinus1  = width - 1;
-    var heightMinus1 = height - 1;
-    var radiusPlus1  = radius + 1;
-    var sumFactor = radiusPlus1 * ( radiusPlus1 + 1 ) / 2;
-
-    var stackStart = new BlurStack();
-    var stack = stackStart;
-    for ( i = 1; i < div; i++ )
-    {
-        stack = stack.next = new BlurStack();
-        if ( i == radiusPlus1 ) var stackEnd = stack;
-    }
-    stack.next = stackStart;
-    var stackIn = null;
-    var stackOut = null;
-
-    yw = yi = 0;
-
-    var mul_sum = mul_table[radius];
-    var shg_sum = shg_table[radius];
-
-    for ( y = 0; y < height; y++ )
-    {
-        r_in_sum = g_in_sum = b_in_sum = a_in_sum = r_sum = g_sum = b_sum = a_sum = 0;
-
-        r_out_sum = radiusPlus1 * ( pr = pixels[yi] );
-        g_out_sum = radiusPlus1 * ( pg = pixels[yi+1] );
-        b_out_sum = radiusPlus1 * ( pb = pixels[yi+2] );
-        a_out_sum = radiusPlus1 * ( pa = pixels[yi+3] );
-
-        r_sum += sumFactor * pr;
-        g_sum += sumFactor * pg;
-        b_sum += sumFactor * pb;
-        a_sum += sumFactor * pa;
-
-        stack = stackStart;
-
-        for( i = 0; i < radiusPlus1; i++ )
+        var stackStart = new BlurStack();
+        var stack = stackStart;
+        for ( i = 1; i < div; i++ )
         {
-            stack.r = pr;
-            stack.g = pg;
-            stack.b = pb;
-            stack.a = pa;
-            stack = stack.next;
+            stack = stack.next = new BlurStack();
+            if ( i == radiusPlus1 ) var stackEnd = stack;
         }
+        stack.next = stackStart;
+        var stackIn = null;
+        var stackOut = null;
 
-        for( i = 1; i < radiusPlus1; i++ )
-        {
-            p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
-            r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
-            g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
-            b_sum += ( stack.b = ( pb = pixels[p+2])) * rbs;
-            a_sum += ( stack.a = ( pa = pixels[p+3])) * rbs;
+        yw = yi = 0;
 
-            r_in_sum += pr;
-            g_in_sum += pg;
-            b_in_sum += pb;
-            a_in_sum += pa;
+        var mul_sum = mul_table[radius];
+        var shg_sum = shg_table[radius];
 
-            stack = stack.next;
-        }
-
-
-        stackIn = stackStart;
-        stackOut = stackEnd;
-        for ( x = 0; x < width; x++ )
-        {
-            pixels[yi+3] = pa = (a_sum * mul_sum) >> shg_sum;
-            if ( pa != 0 )
-            {
-                pa = 255 / pa;
-                pixels[yi]   = ((r_sum * mul_sum) >> shg_sum) * pa;
-                pixels[yi+1] = ((g_sum * mul_sum) >> shg_sum) * pa;
-                pixels[yi+2] = ((b_sum * mul_sum) >> shg_sum) * pa;
-            } else {
-                pixels[yi] = pixels[yi+1] = pixels[yi+2] = 0;
-            }
-
-            r_sum -= r_out_sum;
-            g_sum -= g_out_sum;
-            b_sum -= b_out_sum;
-            a_sum -= a_out_sum;
-
-            r_out_sum -= stackIn.r;
-            g_out_sum -= stackIn.g;
-            b_out_sum -= stackIn.b;
-            a_out_sum -= stackIn.a;
-
-            p =  ( yw + ( ( p = x + radius + 1 ) < widthMinus1 ? p : widthMinus1 ) ) << 2;
-
-            r_in_sum += ( stackIn.r = pixels[p]);
-            g_in_sum += ( stackIn.g = pixels[p+1]);
-            b_in_sum += ( stackIn.b = pixels[p+2]);
-            a_in_sum += ( stackIn.a = pixels[p+3]);
-
-            r_sum += r_in_sum;
-            g_sum += g_in_sum;
-            b_sum += b_in_sum;
-            a_sum += a_in_sum;
-
-            stackIn = stackIn.next;
-
-            r_out_sum += ( pr = stackOut.r );
-            g_out_sum += ( pg = stackOut.g );
-            b_out_sum += ( pb = stackOut.b );
-            a_out_sum += ( pa = stackOut.a );
-
-            r_in_sum -= pr;
-            g_in_sum -= pg;
-            b_in_sum -= pb;
-            a_in_sum -= pa;
-
-            stackOut = stackOut.next;
-
-            yi += 4;
-        }
-        yw += width;
-    }
-
-
-    for ( x = 0; x < width; x++ )
-    {
-        g_in_sum = b_in_sum = a_in_sum = r_in_sum = g_sum = b_sum = a_sum = r_sum = 0;
-
-        yi = x << 2;
-        r_out_sum = radiusPlus1 * ( pr = pixels[yi]);
-        g_out_sum = radiusPlus1 * ( pg = pixels[yi+1]);
-        b_out_sum = radiusPlus1 * ( pb = pixels[yi+2]);
-        a_out_sum = radiusPlus1 * ( pa = pixels[yi+3]);
-
-        r_sum += sumFactor * pr;
-        g_sum += sumFactor * pg;
-        b_sum += sumFactor * pb;
-        a_sum += sumFactor * pa;
-
-        stack = stackStart;
-
-        for( i = 0; i < radiusPlus1; i++ )
-        {
-            stack.r = pr;
-            stack.g = pg;
-            stack.b = pb;
-            stack.a = pa;
-            stack = stack.next;
-        }
-
-        yp = width;
-
-        for( i = 1; i <= radius; i++ )
-        {
-            yi = ( yp + x ) << 2;
-
-            r_sum += ( stack.r = ( pr = pixels[yi])) * ( rbs = radiusPlus1 - i );
-            g_sum += ( stack.g = ( pg = pixels[yi+1])) * rbs;
-            b_sum += ( stack.b = ( pb = pixels[yi+2])) * rbs;
-            a_sum += ( stack.a = ( pa = pixels[yi+3])) * rbs;
-
-            r_in_sum += pr;
-            g_in_sum += pg;
-            b_in_sum += pb;
-            a_in_sum += pa;
-
-            stack = stack.next;
-
-            if( i < heightMinus1 )
-            {
-                yp += width;
-            }
-        }
-
-        yi = x;
-        stackIn = stackStart;
-        stackOut = stackEnd;
         for ( y = 0; y < height; y++ )
         {
-            p = yi << 2;
-            pixels[p+3] = pa = (a_sum * mul_sum) >> shg_sum;
-            if ( pa > 0 )
+            r_in_sum = g_in_sum = b_in_sum = a_in_sum = r_sum = g_sum = b_sum = a_sum = 0;
+
+            r_out_sum = radiusPlus1 * ( pr = pixels[yi] );
+            g_out_sum = radiusPlus1 * ( pg = pixels[yi+1] );
+            b_out_sum = radiusPlus1 * ( pb = pixels[yi+2] );
+            a_out_sum = radiusPlus1 * ( pa = pixels[yi+3] );
+
+            r_sum += sumFactor * pr;
+            g_sum += sumFactor * pg;
+            b_sum += sumFactor * pb;
+            a_sum += sumFactor * pa;
+
+            stack = stackStart;
+
+            for( i = 0; i < radiusPlus1; i++ )
             {
-                pa = 255 / pa;
-                pixels[p]   = ((r_sum * mul_sum) >> shg_sum ) * pa;
-                pixels[p+1] = ((g_sum * mul_sum) >> shg_sum ) * pa;
-                pixels[p+2] = ((b_sum * mul_sum) >> shg_sum ) * pa;
-            } else {
-                pixels[p] = pixels[p+1] = pixels[p+2] = 0;
+                stack.r = pr;
+                stack.g = pg;
+                stack.b = pb;
+                stack.a = pa;
+                stack = stack.next;
             }
 
-            r_sum -= r_out_sum;
-            g_sum -= g_out_sum;
-            b_sum -= b_out_sum;
-            a_sum -= a_out_sum;
+            for( i = 1; i < radiusPlus1; i++ )
+            {
+                p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
+                r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
+                g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
+                b_sum += ( stack.b = ( pb = pixels[p+2])) * rbs;
+                a_sum += ( stack.a = ( pa = pixels[p+3])) * rbs;
 
-            r_out_sum -= stackIn.r;
-            g_out_sum -= stackIn.g;
-            b_out_sum -= stackIn.b;
-            a_out_sum -= stackIn.a;
+                r_in_sum += pr;
+                g_in_sum += pg;
+                b_in_sum += pb;
+                a_in_sum += pa;
 
-            p = ( x + (( ( p = y + radiusPlus1) < heightMinus1 ? p : heightMinus1 ) * width )) << 2;
-
-            r_sum += ( r_in_sum += ( stackIn.r = pixels[p]));
-            g_sum += ( g_in_sum += ( stackIn.g = pixels[p+1]));
-            b_sum += ( b_in_sum += ( stackIn.b = pixels[p+2]));
-            a_sum += ( a_in_sum += ( stackIn.a = pixels[p+3]));
-
-            stackIn = stackIn.next;
-
-            r_out_sum += ( pr = stackOut.r );
-            g_out_sum += ( pg = stackOut.g );
-            b_out_sum += ( pb = stackOut.b );
-            a_out_sum += ( pa = stackOut.a );
-
-            r_in_sum -= pr;
-            g_in_sum -= pg;
-            b_in_sum -= pb;
-            a_in_sum -= pa;
-
-            stackOut = stackOut.next;
-
-            yi += width;
-        }
-    }
-
-    context.putImageData( imageData, top_x, top_y );
-
-}
+                stack = stack.next;
+            }
 
 
-function stackBlurCanvasRGB( canvasIDOrElement, top_x, top_y, width, height, radius )
-{
-    if ( isNaN(radius) || radius < 1 ) return;
-    radius |= 0;
+            stackIn = stackStart;
+            stackOut = stackEnd;
+            for ( x = 0; x < width; x++ )
+            {
+                pixels[yi+3] = pa = (a_sum * mul_sum) >> shg_sum;
+                if ( pa != 0 )
+                {
+                    pa = 255 / pa;
+                    pixels[yi]   = ((r_sum * mul_sum) >> shg_sum) * pa;
+                    pixels[yi+1] = ((g_sum * mul_sum) >> shg_sum) * pa;
+                    pixels[yi+2] = ((b_sum * mul_sum) >> shg_sum) * pa;
+                } else {
+                    pixels[yi] = pixels[yi+1] = pixels[yi+2] = 0;
+                }
 
-    var canvas  = canvasIDOrElement;
-    var context = canvas.getContext("2d");
-    var imageData;
+                r_sum -= r_out_sum;
+                g_sum -= g_out_sum;
+                b_sum -= b_out_sum;
+                a_sum -= a_out_sum;
 
-    imageData = context.getImageData( top_x, top_y, width, height );
+                r_out_sum -= stackIn.r;
+                g_out_sum -= stackIn.g;
+                b_out_sum -= stackIn.b;
+                a_out_sum -= stackIn.a;
 
+                p =  ( yw + ( ( p = x + radius + 1 ) < widthMinus1 ? p : widthMinus1 ) ) << 2;
 
-    var pixels = imageData.data;
+                r_in_sum += ( stackIn.r = pixels[p]);
+                g_in_sum += ( stackIn.g = pixels[p+1]);
+                b_in_sum += ( stackIn.b = pixels[p+2]);
+                a_in_sum += ( stackIn.a = pixels[p+3]);
 
-    var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum,
-    r_out_sum, g_out_sum, b_out_sum,
-    r_in_sum, g_in_sum, b_in_sum,
-    pr, pg, pb, rbs;
+                r_sum += r_in_sum;
+                g_sum += g_in_sum;
+                b_sum += b_in_sum;
+                a_sum += a_in_sum;
 
-    var div = radius + radius + 1;
-    var w4 = width << 2;
-    var widthMinus1  = width - 1;
-    var heightMinus1 = height - 1;
-    var radiusPlus1  = radius + 1;
-    var sumFactor = radiusPlus1 * ( radiusPlus1 + 1 ) / 2;
+                stackIn = stackIn.next;
 
-    var stackStart = new BlurStack();
-    var stack = stackStart;
-    for ( i = 1; i < div; i++ )
-    {
-        stack = stack.next = new BlurStack();
-        if ( i == radiusPlus1 ) var stackEnd = stack;
-    }
-    stack.next = stackStart;
-    var stackIn = null;
-    var stackOut = null;
+                r_out_sum += ( pr = stackOut.r );
+                g_out_sum += ( pg = stackOut.g );
+                b_out_sum += ( pb = stackOut.b );
+                a_out_sum += ( pa = stackOut.a );
 
-    yw = yi = 0;
+                r_in_sum -= pr;
+                g_in_sum -= pg;
+                b_in_sum -= pb;
+                a_in_sum -= pa;
 
-    var mul_sum = mul_table[radius];
-    var shg_sum = shg_table[radius];
+                stackOut = stackOut.next;
 
-    for ( y = 0; y < height; y++ )
-    {
-        r_in_sum = g_in_sum = b_in_sum = r_sum = g_sum = b_sum = 0;
-
-        r_out_sum = radiusPlus1 * ( pr = pixels[yi] );
-        g_out_sum = radiusPlus1 * ( pg = pixels[yi+1] );
-        b_out_sum = radiusPlus1 * ( pb = pixels[yi+2] );
-
-        r_sum += sumFactor * pr;
-        g_sum += sumFactor * pg;
-        b_sum += sumFactor * pb;
-
-        stack = stackStart;
-
-        for( i = 0; i < radiusPlus1; i++ )
-        {
-            stack.r = pr;
-            stack.g = pg;
-            stack.b = pb;
-            stack = stack.next;
-        }
-
-        for( i = 1; i < radiusPlus1; i++ )
-        {
-            p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
-            r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
-            g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
-            b_sum += ( stack.b = ( pb = pixels[p+2])) * rbs;
-
-            r_in_sum += pr;
-            g_in_sum += pg;
-            b_in_sum += pb;
-
-            stack = stack.next;
+                yi += 4;
+            }
+            yw += width;
         }
 
 
-        stackIn = stackStart;
-        stackOut = stackEnd;
         for ( x = 0; x < width; x++ )
         {
-            pixels[yi]   = (r_sum * mul_sum) >> shg_sum;
-            pixels[yi+1] = (g_sum * mul_sum) >> shg_sum;
-            pixels[yi+2] = (b_sum * mul_sum) >> shg_sum;
+            g_in_sum = b_in_sum = a_in_sum = r_in_sum = g_sum = b_sum = a_sum = r_sum = 0;
 
-            r_sum -= r_out_sum;
-            g_sum -= g_out_sum;
-            b_sum -= b_out_sum;
+            yi = x << 2;
+            r_out_sum = radiusPlus1 * ( pr = pixels[yi]);
+            g_out_sum = radiusPlus1 * ( pg = pixels[yi+1]);
+            b_out_sum = radiusPlus1 * ( pb = pixels[yi+2]);
+            a_out_sum = radiusPlus1 * ( pa = pixels[yi+3]);
 
-            r_out_sum -= stackIn.r;
-            g_out_sum -= stackIn.g;
-            b_out_sum -= stackIn.b;
+            r_sum += sumFactor * pr;
+            g_sum += sumFactor * pg;
+            b_sum += sumFactor * pb;
+            a_sum += sumFactor * pa;
 
-            p =  ( yw + ( ( p = x + radius + 1 ) < widthMinus1 ? p : widthMinus1 ) ) << 2;
+            stack = stackStart;
 
-            r_in_sum += ( stackIn.r = pixels[p]);
-            g_in_sum += ( stackIn.g = pixels[p+1]);
-            b_in_sum += ( stackIn.b = pixels[p+2]);
-
-            r_sum += r_in_sum;
-            g_sum += g_in_sum;
-            b_sum += b_in_sum;
-
-            stackIn = stackIn.next;
-
-            r_out_sum += ( pr = stackOut.r );
-            g_out_sum += ( pg = stackOut.g );
-            b_out_sum += ( pb = stackOut.b );
-
-            r_in_sum -= pr;
-            g_in_sum -= pg;
-            b_in_sum -= pb;
-
-            stackOut = stackOut.next;
-
-            yi += 4;
-        }
-        yw += width;
-    }
-
-
-    for ( x = 0; x < width; x++ )
-    {
-        g_in_sum = b_in_sum = r_in_sum = g_sum = b_sum = r_sum = 0;
-
-        yi = x << 2;
-        r_out_sum = radiusPlus1 * ( pr = pixels[yi]);
-        g_out_sum = radiusPlus1 * ( pg = pixels[yi+1]);
-        b_out_sum = radiusPlus1 * ( pb = pixels[yi+2]);
-
-        r_sum += sumFactor * pr;
-        g_sum += sumFactor * pg;
-        b_sum += sumFactor * pb;
-
-        stack = stackStart;
-
-        for( i = 0; i < radiusPlus1; i++ )
-        {
-            stack.r = pr;
-            stack.g = pg;
-            stack.b = pb;
-            stack = stack.next;
-        }
-
-        yp = width;
-
-        for( i = 1; i <= radius; i++ )
-        {
-            yi = ( yp + x ) << 2;
-
-            r_sum += ( stack.r = ( pr = pixels[yi])) * ( rbs = radiusPlus1 - i );
-            g_sum += ( stack.g = ( pg = pixels[yi+1])) * rbs;
-            b_sum += ( stack.b = ( pb = pixels[yi+2])) * rbs;
-
-            r_in_sum += pr;
-            g_in_sum += pg;
-            b_in_sum += pb;
-
-            stack = stack.next;
-
-            if( i < heightMinus1 )
+            for( i = 0; i < radiusPlus1; i++ )
             {
-                yp += width;
+                stack.r = pr;
+                stack.g = pg;
+                stack.b = pb;
+                stack.a = pa;
+                stack = stack.next;
+            }
+
+            yp = width;
+
+            for( i = 1; i <= radius; i++ )
+            {
+                yi = ( yp + x ) << 2;
+
+                r_sum += ( stack.r = ( pr = pixels[yi])) * ( rbs = radiusPlus1 - i );
+                g_sum += ( stack.g = ( pg = pixels[yi+1])) * rbs;
+                b_sum += ( stack.b = ( pb = pixels[yi+2])) * rbs;
+                a_sum += ( stack.a = ( pa = pixels[yi+3])) * rbs;
+
+                r_in_sum += pr;
+                g_in_sum += pg;
+                b_in_sum += pb;
+                a_in_sum += pa;
+
+                stack = stack.next;
+
+                if( i < heightMinus1 )
+                {
+                    yp += width;
+                }
+            }
+
+            yi = x;
+            stackIn = stackStart;
+            stackOut = stackEnd;
+            for ( y = 0; y < height; y++ )
+            {
+                p = yi << 2;
+                pixels[p+3] = pa = (a_sum * mul_sum) >> shg_sum;
+                if ( pa > 0 )
+                {
+                    pa = 255 / pa;
+                    pixels[p]   = ((r_sum * mul_sum) >> shg_sum ) * pa;
+                    pixels[p+1] = ((g_sum * mul_sum) >> shg_sum ) * pa;
+                    pixels[p+2] = ((b_sum * mul_sum) >> shg_sum ) * pa;
+                } else {
+                    pixels[p] = pixels[p+1] = pixels[p+2] = 0;
+                }
+
+                r_sum -= r_out_sum;
+                g_sum -= g_out_sum;
+                b_sum -= b_out_sum;
+                a_sum -= a_out_sum;
+
+                r_out_sum -= stackIn.r;
+                g_out_sum -= stackIn.g;
+                b_out_sum -= stackIn.b;
+                a_out_sum -= stackIn.a;
+
+                p = ( x + (( ( p = y + radiusPlus1) < heightMinus1 ? p : heightMinus1 ) * width )) << 2;
+
+                r_sum += ( r_in_sum += ( stackIn.r = pixels[p]));
+                g_sum += ( g_in_sum += ( stackIn.g = pixels[p+1]));
+                b_sum += ( b_in_sum += ( stackIn.b = pixels[p+2]));
+                a_sum += ( a_in_sum += ( stackIn.a = pixels[p+3]));
+
+                stackIn = stackIn.next;
+
+                r_out_sum += ( pr = stackOut.r );
+                g_out_sum += ( pg = stackOut.g );
+                b_out_sum += ( pb = stackOut.b );
+                a_out_sum += ( pa = stackOut.a );
+
+                r_in_sum -= pr;
+                g_in_sum -= pg;
+                b_in_sum -= pb;
+                a_in_sum -= pa;
+
+                stackOut = stackOut.next;
+
+                yi += width;
             }
         }
 
-        yi = x;
-        stackIn = stackStart;
-        stackOut = stackEnd;
+        context.putImageData( imageData, top_x, top_y );
+
+    },
+
+    stackBlurCanvasRGB: function( canvasIDOrElement, top_x, top_y, width, height, radius ) {
+        if ( isNaN(radius) || radius < 1 ) return;
+        radius |= 0;
+
+        var canvas  = canvasIDOrElement;
+        var context = canvas.getContext("2d");
+        var imageData;
+
+        imageData = context.getImageData( top_x, top_y, width, height );
+
+
+        var pixels = imageData.data;
+
+        var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum,
+        r_out_sum, g_out_sum, b_out_sum,
+        r_in_sum, g_in_sum, b_in_sum,
+        pr, pg, pb, rbs;
+
+        var div = radius + radius + 1;
+        var w4 = width << 2;
+        var widthMinus1  = width - 1;
+        var heightMinus1 = height - 1;
+        var radiusPlus1  = radius + 1;
+        var sumFactor = radiusPlus1 * ( radiusPlus1 + 1 ) / 2;
+
+        var stackStart = new BlurStack();
+        var stack = stackStart;
+        for ( i = 1; i < div; i++ )
+        {
+            stack = stack.next = new BlurStack();
+            if ( i == radiusPlus1 ) var stackEnd = stack;
+        }
+        stack.next = stackStart;
+        var stackIn = null;
+        var stackOut = null;
+
+        yw = yi = 0;
+
+        var mul_sum = mul_table[radius];
+        var shg_sum = shg_table[radius];
+
         for ( y = 0; y < height; y++ )
         {
-            p = yi << 2;
-            pixels[p]   = (r_sum * mul_sum) >> shg_sum;
-            pixels[p+1] = (g_sum * mul_sum) >> shg_sum;
-            pixels[p+2] = (b_sum * mul_sum) >> shg_sum;
+            r_in_sum = g_in_sum = b_in_sum = r_sum = g_sum = b_sum = 0;
 
-            r_sum -= r_out_sum;
-            g_sum -= g_out_sum;
-            b_sum -= b_out_sum;
+            r_out_sum = radiusPlus1 * ( pr = pixels[yi] );
+            g_out_sum = radiusPlus1 * ( pg = pixels[yi+1] );
+            b_out_sum = radiusPlus1 * ( pb = pixels[yi+2] );
 
-            r_out_sum -= stackIn.r;
-            g_out_sum -= stackIn.g;
-            b_out_sum -= stackIn.b;
+            r_sum += sumFactor * pr;
+            g_sum += sumFactor * pg;
+            b_sum += sumFactor * pb;
 
-            p = ( x + (( ( p = y + radiusPlus1) < heightMinus1 ? p : heightMinus1 ) * width )) << 2;
+            stack = stackStart;
 
-            r_sum += ( r_in_sum += ( stackIn.r = pixels[p]));
-            g_sum += ( g_in_sum += ( stackIn.g = pixels[p+1]));
-            b_sum += ( b_in_sum += ( stackIn.b = pixels[p+2]));
+            for( i = 0; i < radiusPlus1; i++ )
+            {
+                stack.r = pr;
+                stack.g = pg;
+                stack.b = pb;
+                stack = stack.next;
+            }
 
-            stackIn = stackIn.next;
+            for( i = 1; i < radiusPlus1; i++ )
+            {
+                p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
+                r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
+                g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
+                b_sum += ( stack.b = ( pb = pixels[p+2])) * rbs;
 
-            r_out_sum += ( pr = stackOut.r );
-            g_out_sum += ( pg = stackOut.g );
-            b_out_sum += ( pb = stackOut.b );
+                r_in_sum += pr;
+                g_in_sum += pg;
+                b_in_sum += pb;
 
-            r_in_sum -= pr;
-            g_in_sum -= pg;
-            b_in_sum -= pb;
+                stack = stack.next;
+            }
 
-            stackOut = stackOut.next;
 
-            yi += width;
+            stackIn = stackStart;
+            stackOut = stackEnd;
+            for ( x = 0; x < width; x++ )
+            {
+                pixels[yi]   = (r_sum * mul_sum) >> shg_sum;
+                pixels[yi+1] = (g_sum * mul_sum) >> shg_sum;
+                pixels[yi+2] = (b_sum * mul_sum) >> shg_sum;
+
+                r_sum -= r_out_sum;
+                g_sum -= g_out_sum;
+                b_sum -= b_out_sum;
+
+                r_out_sum -= stackIn.r;
+                g_out_sum -= stackIn.g;
+                b_out_sum -= stackIn.b;
+
+                p =  ( yw + ( ( p = x + radius + 1 ) < widthMinus1 ? p : widthMinus1 ) ) << 2;
+
+                r_in_sum += ( stackIn.r = pixels[p]);
+                g_in_sum += ( stackIn.g = pixels[p+1]);
+                b_in_sum += ( stackIn.b = pixels[p+2]);
+
+                r_sum += r_in_sum;
+                g_sum += g_in_sum;
+                b_sum += b_in_sum;
+
+                stackIn = stackIn.next;
+
+                r_out_sum += ( pr = stackOut.r );
+                g_out_sum += ( pg = stackOut.g );
+                b_out_sum += ( pb = stackOut.b );
+
+                r_in_sum -= pr;
+                g_in_sum -= pg;
+                b_in_sum -= pb;
+
+                stackOut = stackOut.next;
+
+                yi += 4;
+            }
+            yw += width;
         }
+
+
+        for ( x = 0; x < width; x++ )
+        {
+            g_in_sum = b_in_sum = r_in_sum = g_sum = b_sum = r_sum = 0;
+
+            yi = x << 2;
+            r_out_sum = radiusPlus1 * ( pr = pixels[yi]);
+            g_out_sum = radiusPlus1 * ( pg = pixels[yi+1]);
+            b_out_sum = radiusPlus1 * ( pb = pixels[yi+2]);
+
+            r_sum += sumFactor * pr;
+            g_sum += sumFactor * pg;
+            b_sum += sumFactor * pb;
+
+            stack = stackStart;
+
+            for( i = 0; i < radiusPlus1; i++ )
+            {
+                stack.r = pr;
+                stack.g = pg;
+                stack.b = pb;
+                stack = stack.next;
+            }
+
+            yp = width;
+
+            for( i = 1; i <= radius; i++ )
+            {
+                yi = ( yp + x ) << 2;
+
+                r_sum += ( stack.r = ( pr = pixels[yi])) * ( rbs = radiusPlus1 - i );
+                g_sum += ( stack.g = ( pg = pixels[yi+1])) * rbs;
+                b_sum += ( stack.b = ( pb = pixels[yi+2])) * rbs;
+
+                r_in_sum += pr;
+                g_in_sum += pg;
+                b_in_sum += pb;
+
+                stack = stack.next;
+
+                if( i < heightMinus1 )
+                {
+                    yp += width;
+                }
+            }
+
+            yi = x;
+            stackIn = stackStart;
+            stackOut = stackEnd;
+            for ( y = 0; y < height; y++ )
+            {
+                p = yi << 2;
+                pixels[p]   = (r_sum * mul_sum) >> shg_sum;
+                pixels[p+1] = (g_sum * mul_sum) >> shg_sum;
+                pixels[p+2] = (b_sum * mul_sum) >> shg_sum;
+
+                r_sum -= r_out_sum;
+                g_sum -= g_out_sum;
+                b_sum -= b_out_sum;
+
+                r_out_sum -= stackIn.r;
+                g_out_sum -= stackIn.g;
+                b_out_sum -= stackIn.b;
+
+                p = ( x + (( ( p = y + radiusPlus1) < heightMinus1 ? p : heightMinus1 ) * width )) << 2;
+
+                r_sum += ( r_in_sum += ( stackIn.r = pixels[p]));
+                g_sum += ( g_in_sum += ( stackIn.g = pixels[p+1]));
+                b_sum += ( b_in_sum += ( stackIn.b = pixels[p+2]));
+
+                stackIn = stackIn.next;
+
+                r_out_sum += ( pr = stackOut.r );
+                g_out_sum += ( pg = stackOut.g );
+                b_out_sum += ( pb = stackOut.b );
+
+                r_in_sum -= pr;
+                g_in_sum -= pg;
+                b_in_sum -= pb;
+
+                stackOut = stackOut.next;
+
+                yi += width;
+            }
+        }
+
+        context.putImageData( imageData, top_x, top_y );
+
     }
+};
 
-    context.putImageData( imageData, top_x, top_y );
 
-}
-
-function BlurStack()
-{
+function BlurStack() {
     this.r = 0;
     this.g = 0;
     this.b = 0;
