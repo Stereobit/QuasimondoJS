@@ -109,7 +109,6 @@ stackBlurImage.prototype = {
     },
 
     stackBlurCanvasRGBA: function(top_x, top_y, width, height, radius ) {
-        if ( isNaN(radius) || radius < 1 ) return;
         radius |= 0;
 
         var canvas  = this.options.canvas;
@@ -354,7 +353,6 @@ stackBlurImage.prototype = {
     },
 
     stackBlurCanvasRGB: function(top_x, top_y, width, height, radius ) {
-        if ( isNaN(radius) || radius < 1 ) return;
         radius |= 0;
 
         var canvas  = this.options.canvas;
