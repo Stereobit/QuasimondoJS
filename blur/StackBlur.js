@@ -92,7 +92,6 @@ stackBlurImage.prototype = {
         var w = img.naturalWidth;
         var h = img.naturalHeight;
 
-
         // make sure that radius is a number
         this.options.radius = this.options.radius |= 0;
 
@@ -104,9 +103,9 @@ stackBlurImage.prototype = {
         this.createCanvas();
 
         if ( this.options.aphaChannel )
-            this.stackBlurCanvasRGBA(0, 0, w, h, this.options.radius );
+            this.stackBlurCanvasRGBA(0, 0, w, h);
         else
-            stackBlurCanvasRGB(0, 0, w, h, this.options.radius );
+            stackBlurCanvasRGB(0, 0, w, h);
     },
 
     createCanvas: function() {
@@ -125,11 +124,12 @@ stackBlurImage.prototype = {
         context.drawImage( img, 0, 0 );
     },
 
-    stackBlurCanvasRGBA: function(top_x, top_y, width, height, radius ) {
+    stackBlurCanvasRGBA: function(top_x, top_y, width, height) {
 
         var canvas  = this.options.canvas;
         var context = canvas.getContext("2d");
         var imageData;
+        var radius = this.options.radius;
 
         imageData = context.getImageData( top_x, top_y, width, height );
 
@@ -368,11 +368,12 @@ stackBlurImage.prototype = {
 
     },
 
-    stackBlurCanvasRGB: function(top_x, top_y, width, height, radius ) {
+    stackBlurCanvasRGB: function(top_x, top_y, width, height) {
 
         var canvas  = this.options.canvas;
         var context = canvas.getContext("2d");
         var imageData;
+        var radius = this.options.radius;
 
         imageData = context.getImageData( top_x, top_y, width, height );
 
