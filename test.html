@@ -16,7 +16,12 @@
 
     <script src="blur/StackBlur.js"></script>
     <script>
-        stackBlurImage("image", "canvas", 50, true);
+        new stackBlurImage({
+            image      : "image",
+            canvas     : "canvas",
+            radius     : 50,
+            aphaChannel: true
+        });
     </script>
 
 </body>

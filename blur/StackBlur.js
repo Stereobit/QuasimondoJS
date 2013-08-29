@@ -76,14 +76,15 @@ var shg_table = [
         24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
         24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24 ];
 
-function stackBlurImage( imageIDOrElement, canvasIDOrElement, radius, blurAlphaChannel )
-{
+var stackBlurImage = function(options) {
 
-    var img = stackBlurGetElement( imageIDOrElement );
+    this.options = options;
+
+    var img = stackBlurGetElement(this.options.image);
     var w = img.naturalWidth;
     var h = img.naturalHeight;
 
-    var canvas = stackBlurGetElement( canvasIDOrElement );
+    var canvas = stackBlurGetElement(this.options.canvas);
 
     canvas.style.width  = w + "px";
     canvas.style.height = h + "px";
@@ -94,13 +95,13 @@ function stackBlurImage( imageIDOrElement, canvasIDOrElement, radius, blurAlphaC
     context.clearRect( 0, 0, w, h );
     context.drawImage( img, 0, 0 );
 
-    if ( isNaN(radius) || radius < 1 ) return;
+    if ( isNaN(this.options.radius) || this.options.radius < 1 ) return;
 
-    if ( blurAlphaChannel )
-        stackBlurCanvasRGBA( canvasIDOrElement, 0, 0, w, h, radius );
+    if ( this.options.aphaChannel )
+        stackBlurCanvasRGBA(this.options.canvas, 0, 0, w, h, this.options.radius );
     else
-        stackBlurCanvasRGB( canvasIDOrElement, 0, 0, w, h, radius );
-}
+        stackBlurCanvasRGB(this.options.canvas, 0, 0, w, h, this.options.radius );
+};
 
 
 function stackBlurCanvasRGBA( canvasIDOrElement, top_x, top_y, width, height, radius )
