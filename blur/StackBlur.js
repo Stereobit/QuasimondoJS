@@ -98,17 +98,17 @@ var stackBlurImage = function(options) {
     if ( isNaN(this.options.radius) || this.options.radius < 1 ) return;
 
     if ( this.options.aphaChannel )
-        this.stackBlurCanvasRGBA(this.options.canvas, 0, 0, w, h, this.options.radius );
+        this.stackBlurCanvasRGBA(0, 0, w, h, this.options.radius );
     else
-        stackBlurCanvasRGB(this.options.canvas, 0, 0, w, h, this.options.radius );
+        stackBlurCanvasRGB(0, 0, w, h, this.options.radius );
 };
 
 stackBlurImage.prototype = {
-    stackBlurCanvasRGBA: function( canvasIDOrElement, top_x, top_y, width, height, radius ) {
+    stackBlurCanvasRGBA: function(top_x, top_y, width, height, radius ) {
         if ( isNaN(radius) || radius < 1 ) return;
         radius |= 0;
 
-        var canvas  = canvasIDOrElement;
+        var canvas  = this.options.canvas;
         var context = canvas.getContext("2d");
         var imageData;
 
@@ -349,11 +349,11 @@ stackBlurImage.prototype = {
 
     },
 
-    stackBlurCanvasRGB: function( canvasIDOrElement, top_x, top_y, width, height, radius ) {
+    stackBlurCanvasRGB: function(top_x, top_y, width, height, radius ) {
         if ( isNaN(radius) || radius < 1 ) return;
         radius |= 0;
 
-        var canvas  = canvasIDOrElement;
+        var canvas  = this.options.canvas;
         var context = canvas.getContext("2d");
         var imageData;
 
@@ -562,7 +562,8 @@ stackBlurImage.prototype = {
 };
 
 
-function BlurStack() {
+function BlurStack()
+{
     this.r = 0;
     this.g = 0;
     this.b = 0;
