@@ -361,6 +361,9 @@ function stackBlurCanvasRGB( canvasIDOrElement, top_x, top_y, width, height, rad
 
     imageData = context.getImageData( top_x, top_y, width, height );
 
+        console.log(imageData)
+
+
     var pixels = imageData.data;
 
     var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum,
