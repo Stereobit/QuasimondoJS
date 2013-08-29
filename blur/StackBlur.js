@@ -80,11 +80,11 @@ var stackBlurImage = function(options) {
 
     this.options = options;
 
-    var img = stackBlurGetElement(this.options.image);
+    var img = this.options.image;
     var w = img.naturalWidth;
     var h = img.naturalHeight;
 
-    var canvas = stackBlurGetElement(this.options.canvas);
+    var canvas = this.options.canvas;
 
     canvas.style.width  = w + "px";
     canvas.style.height = h + "px";
@@ -109,7 +109,7 @@ function stackBlurCanvasRGBA( canvasIDOrElement, top_x, top_y, width, height, ra
     if ( isNaN(radius) || radius < 1 ) return;
     radius |= 0;
 
-    var canvas  = stackBlurGetElement( canvasIDOrElement );
+    var canvas  = canvasIDOrElement;
     var context = canvas.getContext("2d");
     var imageData;
 
@@ -356,13 +356,11 @@ function stackBlurCanvasRGB( canvasIDOrElement, top_x, top_y, width, height, rad
     if ( isNaN(radius) || radius < 1 ) return;
     radius |= 0;
 
-    var canvas  = stackBlurGetElement( canvasIDOrElement );
+    var canvas  = canvasIDOrElement;
     var context = canvas.getContext("2d");
     var imageData;
 
     imageData = context.getImageData( top_x, top_y, width, height );
-
-        console.log(imageData)
 
 
     var pixels = imageData.data;
@@ -572,12 +570,4 @@ function BlurStack()
     this.b = 0;
     this.a = 0;
     this.next = null;
-}
-
-function stackBlurGetElement( elementOrID )
-{
-    if ( elementOrID.nodeType == 1 )
-        return elementOrID;
-
-    return document.getElementById( elementOrID );
 }
