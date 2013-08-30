@@ -105,7 +105,7 @@ stackBlurImage.prototype = {
         if ( this.options.aphaChannel )
             this.stackBlurCanvasRGBA(0, 0, w, h);
         else
-            stackBlurCanvasRGB(0, 0, w, h);
+            this.stackBlurCanvasRGB(0, 0, w, h);
     },
 
     createCanvas: function() {
