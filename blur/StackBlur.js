@@ -117,7 +117,11 @@ OTHER DEALINGS IN THE SOFTWARE.
                 throw new Error("Please provide radius that is number greater than 1");
             }
 
-            this.createCanvas();
+            try {
+                this.createCanvas();
+            } catch(e) {
+                throw new Error(e);
+            }
 
             if (this.options.alphaChannel) {
                 this.stackBlurCanvasRGBA();
@@ -142,6 +146,7 @@ OTHER DEALINGS IN THE SOFTWARE.
             canvas.height = height;
 
             context.clearRect(0, 0, width, height);
+
             context.drawImage(img, 0, 0);
 
             this.canvas = img.parentNode.insertBefore(canvas, img.nextSibling);
