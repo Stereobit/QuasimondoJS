@@ -55,7 +55,7 @@ var mul_table = [
         451,446,442,437,433,428,424,420,416,412,408,404,400,396,392,388,
         385,381,377,374,370,367,363,360,357,354,350,347,344,341,338,335,
         332,329,326,323,320,318,315,312,310,307,304,302,299,297,294,292,
-        289,287,285,282,280,278,275,273,271,269,267,265,263,261,259];
+        289,287,285,282,280,278,275,273,271,269,267,265,263,261,259],
 
 
     shg_table = [
@@ -74,7 +74,7 @@ var mul_table = [
         24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
         24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
         24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
-        24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24 ];
+        24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24 ],
 
     BlurStack = function() {
         this.r = 0;
@@ -82,6 +82,18 @@ var mul_table = [
         this.b = 0;
         this.a = 0;
         this.next = null;
+    },
+
+    getStyle = function(element, styleProp) {
+        var style;
+
+        if (element.currentStyle) {
+            style = element.currentStyle[styleProp];
+        } else if (window.getComputedStyle) {
+            style = document.defaultView.getComputedStyle(element, null).getPropertyValue(styleProp);
+        }
+
+        return style;
     };
 
 var stackBlurImage = function(options) {
@@ -142,7 +154,7 @@ stackBlurImage.prototype = {
     showCanvas: function() {
         this.canvas.style.width = this.options.image.width + "px";
         this.canvas.style.height = this.options.image.height + "px";
-        this.canvas.style.display = document.defaultView.getComputedStyle(this.options.image,null).getPropertyValue("display");
+        this.canvas.style.display = getStyle(this.options.image, "display");
     },
 
     stackBlurCanvasRGBA: function(top_x, top_y, width, height) {
