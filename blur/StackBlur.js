@@ -97,7 +97,7 @@ OTHER DEALINGS IN THE SOFTWARE.
             return style;
         };
 
-    var stackBlurImage = function(options) {
+    var stackBlur = function(options) {
 
         this.options = options;
 
@@ -105,7 +105,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
     };
 
-    stackBlurImage.prototype = {
+    stackBlur.prototype = {
 
         init: function() {
 
@@ -600,9 +600,9 @@ OTHER DEALINGS IN THE SOFTWARE.
     };
 
     if (typeof define === "function" && define.amd) {
-        define("stackBlurImage", [], function () { return stackBlurImage; });
+        define("stackBlur", [], function () { return stackBlur; });
     } else {
-        window.stackBlurImage = stackBlurImage;
+        window.stackBlur = stackBlur;
     }
 
 })(window);
