@@ -27,27 +27,29 @@
     </ul>
 
 
-
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script type="text/javascript" src="blur/StackBlur.js"></script>
     <script>
 
-        new StackBlur({
-            image      : document.getElementById("image1"),
-            radius     : 50,
-            alphaChannel: true
-        });
+        $(function(arguments) {
+            new StackBlur({
+                image      : document.getElementById("image1"),
+                radius     : 50,
+                alphaChannel: true
+            });
 
-        new StackBlur({
-            image      : document.getElementById("image2"),
-            radius     : 20,
-            alphaChannel: true
-        });
+            new StackBlur({
+                image      : document.getElementById("image2"),
+                radius     : 20,
+                alphaChannel: true
+            });
 
-        new StackBlur({
-            image      : document.getElementById("image3"),
-            radius     : 70,
-            alphaChannel: false
+            new StackBlur({
+                image      : document.getElementById("image3"),
+                radius     : 70,
+                alphaChannel: false
         });
+        })
 
     </script>
 
