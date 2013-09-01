@@ -188,11 +188,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 
             var stackStart = new BlurStack();
             var stack = stackStart;
-            for ( i = 1; i < div; i++ )
-            {
+
+            for ( i = 1; i < div; i++ ) {
                 stack = stack.next = new BlurStack();
                 if ( i == radiusPlus1 ) var stackEnd = stack;
             }
+
             stack.next = stackStart;
             var stackIn = null;
             var stackOut = null;
@@ -217,7 +218,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
                 stack = stackStart;
 
-                for( i = 0; i < radiusPlus1; i++ ) {
+                for ( i = 0; i < radiusPlus1; i++ ) {
                     stack.r = pr;
                     stack.g = pg;
                     stack.b = pb;
@@ -225,7 +226,7 @@ OTHER DEALINGS IN THE SOFTWARE.
                     stack = stack.next;
                 }
 
-                for( i = 1; i < radiusPlus1; i++ ) {
+                for ( i = 1; i < radiusPlus1; i++ ) {
                     p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
                     r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
                     g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
@@ -244,8 +245,10 @@ OTHER DEALINGS IN THE SOFTWARE.
                 stackIn = stackStart;
                 stackOut = stackEnd;
                 for ( x = 0; x < width; x++ ) {
+
                     pixels[yi+3] = pa = (a_sum * mul_sum) >> shg_sum;
-                    if ( pa != 0 ) {
+
+                    if ( pa !== 0 ) {
                         pa = 255 / pa;
                         pixels[yi]   = ((r_sum * mul_sum) >> shg_sum) * pa;
                         pixels[yi+1] = ((g_sum * mul_sum) >> shg_sum) * pa;
@@ -346,8 +349,7 @@ OTHER DEALINGS IN THE SOFTWARE.
                 yi = x;
                 stackIn = stackStart;
                 stackOut = stackEnd;
-                for ( y = 0; y < height; y++ )
-                {
+                for ( y = 0; y < height; y++ ) {
                     p = yi << 2;
                     pixels[p+3] = pa = (a_sum * mul_sum) >> shg_sum;
 
@@ -424,11 +426,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 
             var stackStart = new BlurStack();
             var stack = stackStart;
-            for ( i = 1; i < div; i++ )
-            {
+
+            for ( i = 1; i < div; i++ ) {
                 stack = stack.next = new BlurStack();
                 if ( i == radiusPlus1 ) var stackEnd = stack;
             }
+
             stack.next = stackStart;
             var stackIn = null;
             var stackOut = null;
@@ -451,14 +454,14 @@ OTHER DEALINGS IN THE SOFTWARE.
 
                 stack = stackStart;
 
-                for( i = 0; i < radiusPlus1; i++ ) {
+                for ( i = 0; i < radiusPlus1; i++ ) {
                     stack.r = pr;
                     stack.g = pg;
                     stack.b = pb;
                     stack = stack.next;
                 }
 
-                for( i = 1; i < radiusPlus1; i++ ) {
+                for ( i = 1; i < radiusPlus1; i++ ) {
                     p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
                     r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
                     g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
@@ -515,8 +518,7 @@ OTHER DEALINGS IN THE SOFTWARE.
             }
 
 
-            for ( x = 0; x < width; x++ )
-            {
+            for ( x = 0; x < width; x++ ) {
                 g_in_sum = b_in_sum = r_in_sum = g_sum = b_sum = r_sum = 0;
 
                 yi = x << 2;
@@ -530,8 +532,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
                 stack = stackStart;
 
-                for( i = 0; i < radiusPlus1; i++ )
-                {
+                for ( i = 0; i < radiusPlus1; i++ ) {
                     stack.r = pr;
                     stack.g = pg;
                     stack.b = pb;
@@ -540,7 +541,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
                 yp = width;
 
-                for( i = 1; i <= radius; i++ ) {
+                for ( i = 1; i <= radius; i++ ) {
                     yi = ( yp + x ) << 2;
 
                     r_sum += ( stack.r = ( pr = pixels[yi])) * ( rbs = radiusPlus1 - i );
@@ -553,7 +554,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
                     stack = stack.next;
 
-                    if( i < heightMinus1 ) {
+                    if ( i < heightMinus1 ) {
                         yp += width;
                     }
                 }
@@ -597,7 +598,6 @@ OTHER DEALINGS IN THE SOFTWARE.
                     yi += width;
                 }
             }
-
 
             context.putImageData(imageData, 0, 0);
 
