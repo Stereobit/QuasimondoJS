@@ -129,7 +129,7 @@ OTHER DEALINGS IN THE SOFTWARE.
                 this.stackBlurCanvasRGB();
             }
 
-            this.showCanvas();
+            this.options.image.src = this.canvas.toDataURL("image/jpg");
         },
 
         createCanvas: function() {
@@ -139,8 +139,6 @@ OTHER DEALINGS IN THE SOFTWARE.
                 width = img.naturalWidth,
                 height = img.naturalHeight;
 
-            canvas.style.width  = width + "px";
-            canvas.style.height = height + "px";
             canvas.style.display = "none";
             canvas.width = width;
             canvas.height = height;
@@ -149,18 +147,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 
             context.drawImage(img, 0, 0);
 
-            this.canvas = img.parentNode.insertBefore(canvas, img.nextSibling);
+            this.canvas = canvas;
 
-        },
-
-        showCanvas: function() {
-            var image = this.options.image,
-                canvas = this.canvas;
-
-            canvas.style.width = image.width + "px";
-            canvas.style.height = image.height + "px";
-            canvas.style.display = getStyle(image, "display");
-            image.style.display = "none";
         },
 
         stackBlurCanvasRGBA: function() {
