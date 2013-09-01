@@ -583,9 +583,9 @@ OTHER DEALINGS IN THE SOFTWARE.
         (function($) {
             $.fn.stackBlur = function(params) {
                 return this.each(function() {
-                    new StackBlur($.extend({
+                    new StackBlur($.extend(params, {
                         image: this
-                    }, params));
+                    }));
                 });
             };
         })( window.jQuery || window.Zepto );
