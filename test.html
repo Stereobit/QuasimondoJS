@@ -32,19 +32,19 @@
     <script>
 
         $(function(arguments) {
-            new StackBlur({
-                image      : document.getElementById("image1"),
+
+            $("#image1").stackBlur({
                 radius     : 50,
                 alphaChannel: true
             });
 
-            new StackBlur({
+            $("#image2").stackBlur({
                 image      : document.getElementById("image2"),
                 radius     : 20,
                 alphaChannel: true
             });
 
-            new StackBlur({
+            $("#image1").stackBlur({
                 image      : document.getElementById("image3"),
                 radius     : 70,
                 alphaChannel: false
