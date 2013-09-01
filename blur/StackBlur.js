@@ -118,7 +118,7 @@ stackBlurImage.prototype = {
 
         this.createCanvas();
 
-        if ( this.options.aphaChannel ) {
+        if (this.options.alphaChannel) {
             this.stackBlurCanvasRGBA();
         } else {
             this.stackBlurCanvasRGB();
@@ -131,27 +131,30 @@ stackBlurImage.prototype = {
         var canvas = document.createElement("canvas"),
             context = canvas.getContext("2d"),
             img = this.options.image,
-            w = img.naturalWidth,
-            h = img.naturalHeight;
+            width = img.naturalWidth,
+            height = img.naturalHeight;
 
-        canvas.style.width  = w + "px";
-        canvas.style.height = h + "px";
+        canvas.style.width  = width + "px";
+        canvas.style.height = height + "px";
         canvas.style.display = "none";
-        canvas.width = w;
-        canvas.height = h;
+        canvas.width = width;
+        canvas.height = height;
 
-        context.clearRect( 0, 0, w, h );
-        context.drawImage( img, 0, 0 );
+        context.clearRect(0, 0, width, height);
+        context.drawImage(img, 0, 0);
 
         this.canvas = img.parentNode.insertBefore(canvas, img.nextSibling);
 
     },
 
     showCanvas: function() {
-        this.canvas.style.width = this.options.image.width + "px";
-        this.canvas.style.height = this.options.image.height + "px";
-        this.canvas.style.display = getStyle(this.options.image, "display");
-        this.options.image.style.display = "none";
+        var image = this.options.image,
+            canvas = this.canvas;
+
+        canvas.style.width = image.width + "px";
+        canvas.style.height = image.height + "px";
+        canvas.style.display = getStyle(image, "display");
+        image.style.display = "none";
     },
 
     stackBlurCanvasRGBA: function() {
