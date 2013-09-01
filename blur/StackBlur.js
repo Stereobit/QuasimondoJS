@@ -177,7 +177,7 @@ OTHER DEALINGS IN THE SOFTWARE.
             var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum, a_sum,
             r_out_sum, g_out_sum, b_out_sum, a_out_sum,
             r_in_sum, g_in_sum, b_in_sum, a_in_sum,
-            pr, pg, pb, pa, rbs;
+            pr, pg, pb, pa, rbs, stackEnd;
 
             var div = radius + radius + 1;
             var w4 = width << 2;
@@ -191,7 +191,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
             for ( i = 1; i < div; i++ ) {
                 stack = stack.next = new BlurStack();
-                if ( i == radiusPlus1 ) var stackEnd = stack;
+                if ( i == radiusPlus1 ) stackEnd = stack;
             }
 
             stack.next = stackStart;
@@ -415,7 +415,7 @@ OTHER DEALINGS IN THE SOFTWARE.
             var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum,
             r_out_sum, g_out_sum, b_out_sum,
             r_in_sum, g_in_sum, b_in_sum,
-            pr, pg, pb, rbs;
+            pr, pg, pb, rbs, stackEnd;
 
             var div = radius + radius + 1;
             var w4 = width << 2;
@@ -429,7 +429,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
             for ( i = 1; i < div; i++ ) {
                 stack = stack.next = new BlurStack();
-                if ( i == radiusPlus1 ) var stackEnd = stack;
+                if ( i == radiusPlus1 ) stackEnd = stack;
             }
 
             stack.next = stackStart;
@@ -604,12 +604,6 @@ OTHER DEALINGS IN THE SOFTWARE.
         }
     };
 
-    if (typeof define === "function" && define.amd) {
-        define("StackBlur", [], function () { return StackBlur; });
-    } else {
-        window.StackBlur = StackBlur;
-    }
-
     if ( window.jQuery || window.Zepto ) {
         (function($) {
             $.fn.stackBlur = function(params) {
@@ -620,6 +614,12 @@ OTHER DEALINGS IN THE SOFTWARE.
                 });
             };
         })( window.jQuery || window.Zepto );
+    }
+
+    if (typeof define === "function" && define.amd) {
+        define("StackBlur", [], function () { return StackBlur; });
+    } else {
+        window.StackBlur = StackBlur;
     }
 
 })(window);
