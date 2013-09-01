@@ -83,18 +83,6 @@ OTHER DEALINGS IN THE SOFTWARE.
             this.b = 0;
             this.a = 0;
             this.next = null;
-        },
-
-        getStyle = function(element, styleProp) {
-            var style;
-
-            if (element.currentStyle) {
-                style = element.currentStyle[styleProp];
-            } else if (window.getComputedStyle) {
-                style = document.defaultView.getComputedStyle(element, null).getPropertyValue(styleProp);
-            }
-
-            return style;
         };
 
     var StackBlur = function(options) {
@@ -139,7 +127,6 @@ OTHER DEALINGS IN THE SOFTWARE.
                 width = img.naturalWidth,
                 height = img.naturalHeight;
 
-            canvas.style.display = "none";
             canvas.width = width;
             canvas.height = height;
 
