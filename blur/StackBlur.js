@@ -97,7 +97,7 @@ OTHER DEALINGS IN THE SOFTWARE.
             return style;
         };
 
-    var stackBlur = function(options) {
+    var StackBlur = function(options) {
 
         this.options = options;
 
@@ -105,7 +105,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
     };
 
-    stackBlur.prototype = {
+    StackBlur.prototype = {
 
         init: function() {
 
@@ -600,9 +600,21 @@ OTHER DEALINGS IN THE SOFTWARE.
     };
 
     if (typeof define === "function" && define.amd) {
-        define("stackBlur", [], function () { return stackBlur; });
+        define("StackBlur", [], function () { return StackBlur; });
     } else {
-        window.stackBlur = stackBlur;
+        window.StackBlur = StackBlur;
+    }
+
+    if ( window.jQuery || window.Zepto ) {
+        (function($) {
+            $.fn.stackBlur = function(params) {
+                return this.each(function() {
+                    new StackBlur($.extend({
+                        image: this
+                    }, params));
+                });
+            };
+        })( window.jQuery || window.Zepto );
     }
 
 })(window);
