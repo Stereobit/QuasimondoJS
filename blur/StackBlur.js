@@ -117,7 +117,7 @@ stackBlurImage.prototype = {
     },
 
     createCanvas: function() {
-        var canvas = this.options.canvas,
+        var canvas = document.createElement("canvas"),
             img = this.options.image,
             w = img.naturalWidth,
             h = img.naturalHeight;
@@ -127,14 +127,19 @@ stackBlurImage.prototype = {
         canvas.width = w;
         canvas.height = h;
 
+
         var context = canvas.getContext("2d");
         context.clearRect( 0, 0, w, h );
         context.drawImage( img, 0, 0 );
+
+
+        this.canvas = img.parentNode.insertBefore(canvas, img.nextSibling);
+
     },
 
     stackBlurCanvasRGBA: function(top_x, top_y, width, height) {
 
-        var canvas  = this.options.canvas;
+        var canvas  = this.canvas;
         var context = canvas.getContext("2d");
         var imageData;
         var radius = this.options.radius;
@@ -378,7 +383,7 @@ stackBlurImage.prototype = {
 
     stackBlurCanvasRGB: function(top_x, top_y, width, height) {
 
-        var canvas  = this.options.canvas;
+        var canvas  = this.canvas;
         var context = canvas.getContext("2d");
         var imageData;
         var radius = this.options.radius;
