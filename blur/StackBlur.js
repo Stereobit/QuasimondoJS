@@ -108,10 +108,6 @@ stackBlurImage.prototype = {
 
     init: function() {
 
-        var img = this.options.image;
-        var w = img.naturalWidth;
-        var h = img.naturalHeight;
-
         // make sure that radius is a number
         this.options.radius = this.options.radius |= 0;
 
@@ -123,9 +119,9 @@ stackBlurImage.prototype = {
         this.createCanvas();
 
         if ( this.options.aphaChannel ) {
-            this.stackBlurCanvasRGBA(0, 0, w, h);
+            this.stackBlurCanvasRGBA();
         } else {
-            this.stackBlurCanvasRGB(0, 0, w, h);
+            this.stackBlurCanvasRGB();
         }
 
         this.showCanvas();
@@ -158,11 +154,13 @@ stackBlurImage.prototype = {
         this.options.image.style.display = "none";
     },
 
-    stackBlurCanvasRGBA: function(top_x, top_y, width, height) {
+    stackBlurCanvasRGBA: function() {
 
         var canvas  = this.canvas;
         var context = canvas.getContext("2d");
-        var imageData = context.getImageData( top_x, top_y, width, height );
+        var width = this.options.image.naturalWidth;
+        var height = this.options.image.naturalHeight;
+        var imageData = context.getImageData(0, 0, width, height );
         var radius = this.options.radius;
 
         var pixels = imageData.data;
@@ -388,15 +386,17 @@ stackBlurImage.prototype = {
             }
         }
 
-        context.putImageData( imageData, top_x, top_y );
+        context.putImageData(imageData, 0, 0);
 
     },
 
-    stackBlurCanvasRGB: function(top_x, top_y, width, height) {
+    stackBlurCanvasRGB: function() {
 
         var canvas  = this.canvas;
         var context = canvas.getContext("2d");
-        var imageData = context.getImageData( top_x, top_y, width, height );
+        var width = this.options.image.naturalWidth;
+        var height = this.options.image.naturalHeight;
+        var imageData = context.getImageData(0, 0, width, height );
         var radius = this.options.radius;
 
         var pixels = imageData.data;
@@ -590,7 +590,7 @@ stackBlurImage.prototype = {
         }
 
 
-        context.putImageData( imageData, top_x, top_y );
+        context.putImageData(imageData, 0, 0);
 
     }
 };
