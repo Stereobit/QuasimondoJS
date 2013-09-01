@@ -155,6 +155,7 @@ stackBlurImage.prototype = {
         this.canvas.style.width = this.options.image.width + "px";
         this.canvas.style.height = this.options.image.height + "px";
         this.canvas.style.display = getStyle(this.options.image, "display");
+        this.options.image.style.display = "none";
     },
 
     stackBlurCanvasRGBA: function(top_x, top_y, width, height) {
