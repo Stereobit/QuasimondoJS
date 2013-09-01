@@ -119,8 +119,8 @@ stackBlurImage.prototype = {
     createCanvas: function() {
         var canvas = document.createElement("canvas"),
             img = this.options.image,
-            w = img.naturalWidth,
-            h = img.naturalHeight;
+            w = img.width,
+            h = img.height;
 
         canvas.style.width  = w + "px";
         canvas.style.height = h + "px";
@@ -131,7 +131,6 @@ stackBlurImage.prototype = {
         var context = canvas.getContext("2d");
         context.clearRect( 0, 0, w, h );
         context.drawImage( img, 0, 0 );
-
 
         this.canvas = img.parentNode.insertBefore(canvas, img.nextSibling);
 
