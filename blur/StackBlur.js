@@ -110,10 +110,13 @@ stackBlurImage.prototype = {
 
         this.createCanvas();
 
-        if ( this.options.aphaChannel )
+        if ( this.options.aphaChannel ) {
             this.stackBlurCanvasRGBA(0, 0, w, h);
-        else
+        } else {
             this.stackBlurCanvasRGB(0, 0, w, h);
+        }
+
+        this.showCanvas();
     },
 
     createCanvas: function() {
@@ -125,7 +128,7 @@ stackBlurImage.prototype = {
 
         canvas.style.width  = w + "px";
         canvas.style.height = h + "px";
-        canvas.style.display = none;
+        canvas.style.display = "none";
         canvas.width = w;
         canvas.height = h;
 
@@ -134,6 +137,12 @@ stackBlurImage.prototype = {
 
         this.canvas = img.parentNode.insertBefore(canvas, img.nextSibling);
 
+    },
+
+    showCanvas: function() {
+        this.canvas.style.width = this.options.image.width + "px";
+        this.canvas.style.height = this.options.image.height + "px";
+        this.canvas.style.display = document.defaultView.getComputedStyle(this.options.image,null).getPropertyValue("display");
     },
 
     stackBlurCanvasRGBA: function(top_x, top_y, width, height) {
