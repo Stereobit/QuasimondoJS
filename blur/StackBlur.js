@@ -117,7 +117,7 @@ OTHER DEALINGS IN THE SOFTWARE.
                 this.stackBlurCanvasRGB();
             }
 
-            this.options.image.src = this.canvas.toDataURL("image/jpg");
+            this.updateImage();
         },
 
         createCanvas: function() {
@@ -136,6 +136,14 @@ OTHER DEALINGS IN THE SOFTWARE.
 
             this.canvas = canvas;
 
+        },
+
+        updateImage: function() {
+            this.options.image.src = this.canvas.toDataURL("image/jpg");
+
+            if (typeof this.options.callback === "function") {
+                callback();
+            }
         },
 
         stackBlurCanvasRGBA: function() {
