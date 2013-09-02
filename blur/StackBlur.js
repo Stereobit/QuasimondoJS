@@ -142,7 +142,7 @@ OTHER DEALINGS IN THE SOFTWARE.
             this.options.image.src = this.canvas.toDataURL("image/jpg");
 
             if (typeof this.options.callback === "function") {
-                callback();
+                this.options.callback();
             }
         },
 
