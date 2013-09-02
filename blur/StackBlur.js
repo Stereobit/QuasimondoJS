@@ -106,22 +106,16 @@ OTHER DEALINGS IN THE SOFTWARE.
             }
 
             if (!!window.CanvasRenderingContext2D) {
-                try {
-                    this.createCanvas();
-                } catch(e) {
-                    throw new Error(e);
-                }
+                this.updateImage();
             } else if ("filter" in document.body.style) {
-                this.options.image.style.filter = "progid:DXImageTransform.Microsoft.MotionBlur(strength=" + this.options.radius + ")";
+                if (this.options.radius > 100) this.options.radius = 100;
+                this.options.image.style.filter = "progid:DXImageTransform.Microsoft.Blur(PixelRadius=" + this.options.radius + ")";
             }
 
-            if (this.options.alphaChannel) {
-                this.stackBlurCanvasRGBA();
-            } else {
-                this.stackBlurCanvasRGB();
+            if (typeof this.options.callback === "function") {
+                this.options.callback();
             }
 
-            this.updateImage();
         },
 
         createCanvas: function() {
@@ -143,11 +137,20 @@ OTHER DEALINGS IN THE SOFTWARE.
         },
 
         updateImage: function() {
-            this.options.image.src = this.canvas.toDataURL("image/jpg");
 
-            if (typeof this.options.callback === "function") {
-                this.options.callback();
+            try {
+                this.createCanvas();
+            } catch(e) {
+                throw new Error(e);
             }
+
+            if (this.options.alphaChannel) {
+                this.stackBlurCanvasRGBA();
+            } else {
+                this.stackBlurCanvasRGB();
+            }
+
+            this.options.image.src = this.canvas.toDataURL("image/jpg");
         },
 
         stackBlurCanvasRGBA: function() {
