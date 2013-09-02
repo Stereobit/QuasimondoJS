@@ -105,10 +105,14 @@ OTHER DEALINGS IN THE SOFTWARE.
                 throw new Error("Please provide radius that is number greater than 1");
             }
 
-            try {
-                this.createCanvas();
-            } catch(e) {
-                throw new Error(e);
+            if (!!window.CanvasRenderingContext2D) {
+                try {
+                    this.createCanvas();
+                } catch(e) {
+                    throw new Error(e);
+                }
+            } else if ("filter" in document.body.style) {
+                this.options.image.style.filter = "progid:DXImageTransform.Microsoft.MotionBlur(strength=" + this.options.radius + ")";
             }
 
             if (this.options.alphaChannel) {
